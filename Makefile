@@ -2,4 +2,5 @@ install:
 	@poetry install
 
 lint:
-	poetry run flake8 gendiff
+	ppoetry run flake8 gendiff
+
