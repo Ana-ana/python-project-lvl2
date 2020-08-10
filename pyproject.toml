@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gendiff_python"
-version = "0.1.1"
+version = "0.1.2"
 description = "Shows difference between two config files"
 authors = ["Ana-ana"]
 packages = [
