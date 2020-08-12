@@ -12,22 +12,32 @@ parser.add_argument('--f', '--format',
 
 def main():
     args = parser.parse_args()
-    print('Magic begins..')
-    denerate_diff(Path(args.first_file).resolve(),
+    generate_diff(Path(args.first_file).resolve(),
                   Path(args.second_file).resolve())
 
 
-def denerate_diff(path_to_file1, path_to_file2):
-    with open(path_to_file1) as f:
-        file1 = json.load(f)
-    with open(path_to_file2) as q:
-        file2 = json.load(q)
-    for (key, value) in set(file1.items()) & set(file2.items()):
-        print('   {}: {} in both'.format(key, value))
-    for (key, value) in set(file2.items()) - set(file1.items()):
-        print('+  {}: {} was added'.format(key, value))
-    for (key, value) in set(file1.items()) - set(file2.items()):
-        print('-  {}: {} was deleted'.format(key, value))
+def generate_diff(path_to_file1, path_to_file2):
+    file_data1 = get_data_from_file(path_to_file1)
+    file_data2 = get_data_from_file(path_to_file2)
+    print('{')
+    for key, value in file_data1.items():
+        if key in file_data2.keys():
+            if value == file_data2[key]:
+                print('  {}:{}'.format(key, value))
+            else:
+                print('+ {}: {}'.format(key, file_data2[key]))
+                print('- {}: {}'.format(key, file_data1[key]))
+        if key not in file_data2.keys():
+            print('- {}: {}'.format(key, file_data1[key]))
+    for key, value in file_data2.items():
+        if key not in file_data1.keys():
+            print('+ {}: {}'.format(key, file_data2[key]))
+    print('}')
+
+def get_data_from_file(path_to_file):
+    with open(path_to_file) as f:
+        file_data = json.load(f)
+    return file_data
 
 
 if __name__ == '__main__':
