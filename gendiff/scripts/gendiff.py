@@ -1,6 +1,5 @@
 import argparse
 import json
-import difflib
 from pathlib import Path
 
 parser = argparse.ArgumentParser(description='Generate diff')
