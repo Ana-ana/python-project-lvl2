@@ -34,6 +34,7 @@ def generate_diff(path_to_file1, path_to_file2):
             print('+ {}: {}'.format(key, file_data2[key]))
     print('}')
 
+
 def get_data_from_file(path_to_file):
     with open(path_to_file) as f:
         file_data = json.load(f)
