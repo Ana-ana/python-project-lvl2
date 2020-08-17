@@ -15,9 +15,10 @@ parser.add_argument('--f', '--format',
 
 def main():
     args = parser.parse_args()
-    generate_diff(
+    print_result(generate_diff(
                             get_data_from_file(Path(args.first_file).resolve()),
                             get_data_from_file(Path(args.second_file).resolve()))
+    )
 
 
 def generate_diff(file_data1, file_data2):
@@ -33,18 +34,19 @@ def generate_diff(file_data1, file_data2):
     for key in set(file_data1.keys()) & set(file_data2.keys()):
         if file_data1[key] == file_data2[key]:
            difference['common '][key] = file_data1[key]
-           for x, y in difference.items():
         else:
             difference['changed '][key] = [file_data2[key],
                                            file_data1[key]]
+            # difference['changed '].update({key: file_data2[key]})
+            # difference['changed '].update({key: file_data1[key]})
     for key in set(file_data2.keys()) - set(file_data1.keys()):
         difference['added '][key] = file_data2[key]
     for key in set(file_data1.keys()) - set(file_data2.keys()):
         difference['removed '][key] = file_data1[key]
 
-    print(type(difference), 'difference')
-    for x, y in difference.items():
-        print('{} :{}'.format(x, y))
+    # print(type(difference), 'difference')
+    # for x, y in difference.items():
+    #     print('{} :{}'.format(x, y))
     return difference
 
 
@@ -61,9 +63,25 @@ def check_path(path_to_file):
         print(os.path.abspath(path_to_file))
         return os.path.abspath(path_to_file)
 
+
 def print_result(result_obj):
-    for x, y in result_obj.items():
-        print('{} :{}'.format(x, y))
+    res = ['{']
+    for k, v in result_obj.items():
+        for x, y in v.items():
+            if k == 'common ':
+                res.append('  {}: {}'.format(x, y))
+            elif k == 'changed ':
+                res.append('- {}: {}'.format(x, y[1]))
+                res.append('+ {}: {}'.format(x, y[0]))
+            elif k == 'added ':
+                res.append('+ {}: {}'.format(x, y))
+            elif k == 'removed ':
+                res.append('- {}: {}'.format(x, y))
+    res.append('}')
+    print('\n'.join(res))
+
+
+
 
 # diff = {
 #     'same': {'host': 'hexlet.io'},
@@ -71,6 +89,13 @@ def print_result(result_obj):
 #     'added': {'verbose: True'},
 #     'removed': {},
 # }
+
+# <class 'collections.defaultdict'> difference
+# common  :{'host': 'hexlet.io'}
+# changed  :{'timeout': [20, 50]}
+# added  :{'verbose': True}
+# removed  :{'proxy': '123.234.53.22'}
+
 
 
 
