@@ -25,5 +25,5 @@ script:
   - make tests
 
 after_script:
-  - ./ format-coverage -t coverage json -o code_coverage_report.json
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./code_coverage_report.json upload-coverage
+  - ./code_coverage_report.json format-coverage -t coverage json -o code_coverage_report.json
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./code_coverage_report.json upload-coverage; fi
