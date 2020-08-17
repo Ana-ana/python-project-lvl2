@@ -43,9 +43,6 @@ def generate_diff(file_data1, file_data2):
 def get_data_from_file(path_to_file):
     with open(path_to_file) as f:
         file_data = json.load(f)
-    # print(type(file_data))
-    # for x, y in file_data.items():
-    #     print('{}:{}'.format(x, y))
     return file_data
 
 
@@ -61,7 +58,6 @@ def check_path(path_to_file):
 def render_result(result_obj):
     rendered_result = ['{']
     for k, v in result_obj.items():
-        # print('{}:{}'.format(k, v))
         for x, y in v.items():
             if k == 'common ':
                 rendered_result.append('  {}: {}'.format(x, y))
