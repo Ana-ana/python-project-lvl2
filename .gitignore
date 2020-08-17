@@ -7,3 +7,4 @@ dist/
 .idea
 before.json
 after.json
+.pytest_cache
