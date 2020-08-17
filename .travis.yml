@@ -25,6 +25,5 @@ script:
   - make tests
 
 after_script:
-  - ./cc-test-reporter format-coverage -t coverage -o coverage/codeclimate.backend.json coverage/backend/.resultset.json # Format backend coverage
-  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 2                  # Sum both coverage parts into coverage/codeclimate.json
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
+  - ./ format-coverage -t coverage json -o code_coverage_report.json
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then code_coverage_report.json upload-coverage # Upload coverage/codeclimate.json
