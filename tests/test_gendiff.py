@@ -1,10 +1,19 @@
-import os
+from gendiff.scripts.gendiff import generate_diff, \
+                                    render_result, \
+                                    get_data_from_file
 
-from gendiff.scripts.gendiff import generate_diff, print_result, get_data_from_file
 
-def test_print_result():
-    pass
-#  how can check printing to user
+def test_render_result():
+    to_be_rendered = {'common ': {'host': 'hexlet.io'},
+                    'changed ': {'timeout': [20, 50]},
+                    'added ': {'verbose': True},
+                    'removed ': {'proxy': '123.234.53.22'}}
+    expected_result = {'  host': 'hexlet.io',
+                       '- timeout': 50,
+                       '+ timeout': 20,
+                       '+ verbose': True,
+                       '- proxy': '123.234.53.22'}
+    render_result(to_be_rendered) == expected_result
 
 
 def test_generate_diff():

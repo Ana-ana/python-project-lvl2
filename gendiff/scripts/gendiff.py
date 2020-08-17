@@ -14,11 +14,12 @@ parser.add_argument('--f', '--format',
 
 def main():
     args = parser.parse_args()
-    print_result(generate_diff(
+    print('\n'.join(render_result(
+                    generate_diff(
                             get_data_from_file(Path(
                                 args.first_file).resolve()),
                             get_data_from_file(Path(
-                                args.second_file).resolve())))
+                                args.second_file).resolve())))))
 
 
 def generate_diff(file_data1, file_data2):
@@ -57,22 +58,22 @@ def check_path(path_to_file):
         return os.path.abspath(path_to_file)
 
 
-def print_result(result_obj):
-    res = ['{']
+def render_result(result_obj):
+    rendered_result = ['{']
     for k, v in result_obj.items():
-        print('{}:{}'.format(k, v))
+        # print('{}:{}'.format(k, v))
         for x, y in v.items():
             if k == 'common ':
-                res.append('  {}: {}'.format(x, y))
+                rendered_result.append('  {}: {}'.format(x, y))
             elif k == 'changed ':
-                res.append('- {}: {}'.format(x, y[1]))
-                res.append('+ {}: {}'.format(x, y[0]))
+                rendered_result.append('- {}: {}'.format(x, y[1]))
+                rendered_result.append('+ {}: {}'.format(x, y[0]))
             elif k == 'added ':
-                res.append('+ {}: {}'.format(x, y))
+                rendered_result.append('+ {}: {}'.format(x, y))
             elif k == 'removed ':
-                res.append('- {}: {}'.format(x, y))
-    res.append('}')
-    print('\n'.join(res))
+                rendered_result.append('- {}: {}'.format(x, y))
+    rendered_result.append('}')
+    return rendered_result
 
 
 if __name__ == '__main__':
