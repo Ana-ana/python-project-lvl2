@@ -5,6 +5,4 @@ dist/
 .venv/
 .vscode
 .idea
-before.json
-after.json
 .pytest_cache
