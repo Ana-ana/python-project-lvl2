@@ -8,6 +8,6 @@ tests:
 	poetry run pytest tests/test_gendiff.py
 	poetry run pytest --cov=tests tests/ --cov-report xml
 
-
+.PHONY: install, lint, tests
 
 
