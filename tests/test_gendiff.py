@@ -1,3 +1,4 @@
+import os
 from gendiff.scripts.gendiff import generate_diff, \
                                     render_result, \
                                     get_data_from_file
@@ -28,5 +29,6 @@ def test_generate_diff():
 
 def test_get_data_from_file():
     expected_result = {"host": "hexlet.io", "timeout": 50, "proxy": "123.234.53.22"}
-    file_path = '/home/user/python-project-lvl2/gendiff/scripts/before.json'
+    # file_path = './python-project-lvl2/gendiff/scripts/before.json'
+    file_path = str(os.path.join(os.curdir,'./gendiff/scripts/before.json'))
     get_data_from_file(file_path) == expected_result
