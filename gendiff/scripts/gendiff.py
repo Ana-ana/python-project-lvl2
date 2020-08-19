@@ -20,9 +20,13 @@ REMOVED = 'removed'
 
 def main():
     args = parser.parse_args()
-    print('\n'.join(render_result(generate_diff(
-        get_data_from_file(args.first_file),
-        get_data_from_file(args.second_file)))))
+    print('{')
+    for k, v in render_result(generate_diff(
+                                get_data_from_file_json(args.first_file),
+                                get_data_from_file_json(args.second_file)))\
+            .items():
+        print('{}: {}'.format(k, v))
+    print('}')
 
 
 def generate_diff(file_data1, file_data2):
@@ -42,9 +46,14 @@ def generate_diff(file_data1, file_data2):
     return difference
 
 
-def get_data_from_file(path_to_file):
+def get_data_from_file_json(path_to_file):
     with open(path_to_file) as f:
         file_data = json.load(f)
+    return file_data
+
+
+def get_data_from_file_yaml(path_to_file):
+    file_data = 2
     return file_data
 
 
@@ -59,24 +68,18 @@ def check_path(path_to_file):
 
 
 def render_result(result_obj):
-    rendered_result = ['{']
+    rendered_result = defaultdict(dict)
     for key_of_change, params in result_obj.items():
         for file_key, file_key_value in params.items():
             if key_of_change == COMMON:
-                rendered_result.append('  {}: {}'
-                                       .format(file_key, file_key_value))
+                rendered_result['  ' + file_key] = file_key_value
             elif key_of_change == CHANGED:
-                rendered_result.append('- {}: {}'
-                                       .format(file_key, file_key_value[1]))
-                rendered_result.append('+ {}: {}'
-                                       .format(file_key, file_key_value[0]))
+                rendered_result['- ' + file_key] = file_key_value[1]
+                rendered_result['+ ' + file_key] = file_key_value[0]
             elif key_of_change == ADDED:
-                rendered_result.append('+ {}: {}'
-                                       .format(file_key, file_key_value))
+                rendered_result['+ ' + file_key] = file_key_value
             elif key_of_change == REMOVED:
-                rendered_result.append('- {}: {}'
-                                       .format(file_key, file_key_value))
-    rendered_result.append('}')
+                rendered_result['- ' + file_key] = file_key_value
     return rendered_result
 
 
