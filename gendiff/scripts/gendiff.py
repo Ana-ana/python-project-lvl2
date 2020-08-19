@@ -11,7 +11,11 @@ parser.add_argument('--f', '--format',
                     metavar='FORMAT',
                     help='set format of output')
 
-KEYS = ['common', 'changed', 'added', 'removed']
+
+COMMON = 'common'
+CHANGED = 'changed'
+ADDED = 'added'
+REMOVED = 'removed'
 
 
 def main():
@@ -23,18 +27,18 @@ def main():
 
 def generate_diff(file_data1, file_data2):
     difference = defaultdict(dict)
-    for item in KEYS:
+    for item in [COMMON, CHANGED, ADDED, REMOVED]:
         difference[item]
     for key in set(file_data1.keys()) & set(file_data2.keys()):
         if file_data1[key] == file_data2[key]:
-            difference['common'][key] = file_data1[key]
+            difference[COMMON][key] = file_data1[key]
         else:
-            difference['changed'][key] = [file_data2[key],
-                                          file_data1[key]]
+            difference[CHANGED][key] = [file_data2[key],
+                                        file_data1[key]]
     for key in set(file_data2.keys()) - set(file_data1.keys()):
-        difference['added'][key] = file_data2[key]
+        difference[ADDED][key] = file_data2[key]
     for key in set(file_data1.keys()) - set(file_data2.keys()):
-        difference['removed'][key] = file_data1[key]
+        difference[REMOVED][key] = file_data1[key]
     return difference
 
 
@@ -51,24 +55,25 @@ def check_path(path_to_file):
     else:
         print(os.path.abspath(path_to_file))
         return os.path.abspath(path_to_file)
+#  tried to right function to check path to file.
 
 
 def render_result(result_obj):
     rendered_result = ['{']
     for key_of_change, params in result_obj.items():
         for file_key, file_key_value in params.items():
-            if key_of_change == 'common':
+            if key_of_change == COMMON:
                 rendered_result.append('  {}: {}'
                                        .format(file_key, file_key_value))
-            elif key_of_change == 'changed':
+            elif key_of_change == CHANGED:
                 rendered_result.append('- {}: {}'
                                        .format(file_key, file_key_value[1]))
                 rendered_result.append('+ {}: {}'
                                        .format(file_key, file_key_value[0]))
-            elif key_of_change == 'added':
+            elif key_of_change == ADDED:
                 rendered_result.append('+ {}: {}'
                                        .format(file_key, file_key_value))
-            elif key_of_change == 'removed':
+            elif key_of_change == REMOVED:
                 rendered_result.append('- {}: {}'
                                        .format(file_key, file_key_value))
     rendered_result.append('}')
