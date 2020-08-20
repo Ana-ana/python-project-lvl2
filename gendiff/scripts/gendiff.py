@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 
 from collections import defaultdict
 
@@ -20,29 +19,25 @@ REMOVED = 'removed'
 
 def main():
     args = parser.parse_args()
-    print('{')
-    for k, v in render_result(generate_diff(
-                                get_data_from_file_json(args.first_file),
-                                get_data_from_file_json(args.second_file)))\
-            .items():
-        print('{}: {}'.format(k, v))
-    print('}')
+    file1 = get_data_from_file_json(args.first_file)
+    file2 = get_data_from_file_json(args.second_file)
+    difference = generate_diff(file1, file2)
+    print(render_result(difference))
 
 
-def generate_diff(file_data1, file_data2):
+def generate_diff(before, after):
     difference = defaultdict(dict)
     for item in [COMMON, CHANGED, ADDED, REMOVED]:
         difference[item]
-    for key in set(file_data1.keys()) & set(file_data2.keys()):
-        if file_data1[key] == file_data2[key]:
-            difference[COMMON][key] = file_data1[key]
+    for key in before.keys() & after.keys():
+        if before[key] == after[key]:
+            difference[COMMON][key] = before[key]
         else:
-            difference[CHANGED][key] = [file_data2[key],
-                                        file_data1[key]]
-    for key in set(file_data2.keys()) - set(file_data1.keys()):
-        difference[ADDED][key] = file_data2[key]
-    for key in set(file_data1.keys()) - set(file_data2.keys()):
-        difference[REMOVED][key] = file_data1[key]
+            difference[CHANGED][key] = [after[key], before[key]]  # noqa: E501
+    for key in set(after.keys()) - set(before.keys()):
+        difference[ADDED][key] = after[key]
+    for key in set(before.keys()) - set(after.keys()):
+        difference[REMOVED][key] = before[key]
     return difference
 
 
@@ -57,30 +52,31 @@ def get_data_from_file_yaml(path_to_file):
     return file_data
 
 
-def check_path(path_to_file):
-    if os.path.isfile(path_to_file):
-        print('is file', path_to_file)
-        return path_to_file
-    else:
-        print(os.path.abspath(path_to_file))
-        return os.path.abspath(path_to_file)
-#  tried to right function to check path to file.
+def render_result(diff_obj):
+    rendered_diff = defaultdict(dict)
+    for diff_key in [COMMON, CHANGED, ADDED, REMOVED]:
+        for diff_obj_key, diff_obj_value in diff_obj[diff_key].items():
+            if diff_key == COMMON:
+                rendered_diff['  ' + diff_obj_key] = diff_obj_value
+            elif diff_key == CHANGED:
+                rendered_diff['- ' + diff_obj_key] = diff_obj_value[1]
+                rendered_diff['+ ' + diff_obj_key] = diff_obj_value[0]
+            elif diff_key == ADDED:
+                rendered_diff['+ ' + diff_obj_key] = diff_obj_value
+            elif diff_key == REMOVED:
+                rendered_diff['- ' + diff_obj_key] = diff_obj_value
+    render_pretty_output = '{'
+    for x, y in rendered_diff.items():
+        render_pretty_output = render_pretty_output + '\n'
+        render_pretty_output = render_pretty_output + ''\
+            .join('{}: {}'.format(x, y))
+    render_pretty_output = render_pretty_output + '\n' + '}'
 
-
-def render_result(result_obj):
-    rendered_result = defaultdict(dict)
-    for key_of_change, params in result_obj.items():
-        for file_key, file_key_value in params.items():
-            if key_of_change == COMMON:
-                rendered_result['  ' + file_key] = file_key_value
-            elif key_of_change == CHANGED:
-                rendered_result['- ' + file_key] = file_key_value[1]
-                rendered_result['+ ' + file_key] = file_key_value[0]
-            elif key_of_change == ADDED:
-                rendered_result['+ ' + file_key] = file_key_value
-            elif key_of_change == REMOVED:
-                rendered_result['- ' + file_key] = file_key_value
-    return rendered_result
+    # print('render')
+    # # print('\n'.join(rendered_diff))
+    # print(render_pretty_output)
+    # print()
+    return render_pretty_output
 
 
 if __name__ == '__main__':
