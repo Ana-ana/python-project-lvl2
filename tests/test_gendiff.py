@@ -13,8 +13,8 @@ from tests.fixtures.dict_for_gendifftest import rendered_difference, \
                                             content_after
 
 
-def test_render_result(rendered_difference, dictionary_list_of_difference):
-    assert render_result(dictionary_list_of_difference) == rendered_difference
+def test_render_result(rendered_difference, difference):
+    assert render_result(difference) == rendered_difference
 
 
 def test_generate_diff(content_before, content_after,
