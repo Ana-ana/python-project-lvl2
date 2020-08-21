@@ -1,20 +1,6 @@
 import pytest
 
 
-
-DICTIONARY_FROM_AFTER = {"timeout": 20,
-                         "verbose": True,
-                         "host": "hexlet.io"}
-
-DICTIONARY_FINAL_DIFFERENCE = {'  host': 'hexlet.io',
-                               '- timeout': 50,
-                               '+ timeout': 20,
-                               '+ verbose': True,
-                               '- proxy': '123.234.53.22'}
-
-
-
-
 @pytest.fixture
 def content_before():
     return {"host": "hexlet.io",
@@ -31,20 +17,12 @@ def content_after():
 
 @pytest.fixture()
 def rendered_difference():
-    return '{\n' \
-           '  host: hexlet.io\n' \
-           '- timeout: 50\n'\
-           '+ timeout: 20\n' \
-           '+ verbose: True\n' \
-           '- proxy: 123.234.53.22\n' \
-           '}'
-
-
-# {'  host': 'hexlet.io',
-#             '- timeout': 50,
-#             '+ timeout': 20,
-#             '+ verbose': True,
-#             '- proxy': '123.234.53.22'}
+    return ['{', '+ verbose: True',
+            '- timeout: 50',
+            '+ timeout: 20',
+            '  host: hexlet.io',
+            '- proxy: 123.234.53.22',
+            '}']
 
 
 @pytest.fixture()
