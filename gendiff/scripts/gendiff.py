@@ -1,5 +1,7 @@
 import argparse
 import json
+from os import path
+import yaml
 
 from collections import defaultdict
 
@@ -12,8 +14,8 @@ REMOVED = 'removed'
 
 def main():
     args = initialize_parser().parse_args()
-    file1 = get_data_from_file_json(args.first_file)
-    file2 = get_data_from_file_json(args.second_file)
+    file1 = get_data_from_file(args.first_file)
+    file2 = get_data_from_file(args.second_file)
     difference = generate_diff(file1, file2)
     print('\n'.join(render_result(difference)))
 
@@ -42,14 +44,13 @@ def generate_diff(before, after):
     return difference
 
 
-def get_data_from_file_json(path_to_file):
+def get_data_from_file(path_to_file):
+    file_extension = path.splitext(path_to_file)[1]
     with open(path_to_file) as f:
-        file_data = json.load(f)
-    return file_data
-
-
-def get_data_from_file_yaml(path_to_file):
-    file_data = 2
+        if file_extension == '.json':
+            file_data = json.load(f)
+        else:
+            file_data = yaml.load(f, Loader=yaml.FullLoader)
     return file_data
 
 
