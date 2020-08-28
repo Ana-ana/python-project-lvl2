@@ -109,34 +109,34 @@ def render_result(diff_obj):
     #     print('{}: {}'.format(x, y))
     # print()
     rendered_diff = ['{']
-    for diff_key in sorted(diff_obj.keys()):
-        print('diff_key is {} in sorted(diff_obj.keys()) {}'.format(diff_key, sorted(diff_obj.keys())))
+    for diff_key in [COMMON, CHANGED, ADDED, REMOVED]:  #  sorted(diff_obj.keys()):
+        print('-')
+        print('diff_key is={} in sorted(diff_obj.keys())={}'.format(diff_key, sorted(diff_obj.keys())))
+
         for diff_obj_key, diff_obj_value in diff_obj[diff_key].items():
-            # print()
-            # print('FOR. diff_obj_key {}, diff_obj_value {}'.format(diff_obj_key, diff_obj_value))
+            print('diff_obj_key is={} and diff_obj_value={}'.format(diff_obj_key, diff_obj_value))
             # print('diff_obj[diff_key].items()= ', diff_obj[diff_key].items())
-            if isinstance(diff_obj_value, dict):
-                print('Going deeper. render_result {}'.format(diff_obj_value))
-                rendered_diff.append('{}: {}'.format(diff_obj_key, render_result(diff_obj_value)))
-            else:
+
+            if not isinstance(diff_obj_value, dict):
                 if diff_key == COMMON:
                     # print('added COMMON {}: {}'.format(diff_obj_key, diff_obj_value))
-                    rendered_diff.append('  {}: {}\n'.format(diff_obj_key,
-                                                           diff_obj_value))
+                    rendered_diff.append('  {}: {}\n'.format(diff_obj_key, diff_obj_value))
                 elif diff_key == CHANGED:
                     # print('added CHANGED {}: {}'.format(diff_obj_key, diff_obj_value))
-                    rendered_diff.append('- {}: {}'.format(diff_obj_key,
-                                                           diff_obj_value[1]))
-                    rendered_diff.append('+ {}: {}'.format(diff_obj_key,
-                                                           diff_obj_value[0]))
+                    rendered_diff.append('- {}: {}'.format(diff_obj_key, diff_obj_value[1]))
+                    rendered_diff.append('+ {}: {}'.format(diff_obj_key, diff_obj_value[0]))
                 elif diff_key == ADDED:
                     # print('added ADDED {}: {}'.format(diff_obj_key, diff_obj_value))
-                    rendered_diff.append('+ {}: {}'.format(diff_obj_key,
-                                                           diff_obj_value))
+                    rendered_diff.append('+ {}: {}'.format(diff_obj_key, diff_obj_value))
                 elif diff_key == REMOVED:
                     # print('added REMOVED {}: {}'.format(diff_obj_key, diff_obj_value))
-                    rendered_diff.append('- {}: {}'.format(diff_obj_key,
-                                                           diff_obj_value))
+                    rendered_diff.append('- {}: {}'.format(diff_obj_key, diff_obj_value))
+
+            elif diff_obj_key not in diff_obj:
+                continue
+            elif isinstance(diff_obj_value, dict):
+                print('Going deeper. render_result {}'.format(diff_obj_value))
+                rendered_diff.append('{}: {}'.format(diff_obj_key, render_result({COMMON: diff_obj_value})))
     rendered_diff.append('}')
     return rendered_diff
 
