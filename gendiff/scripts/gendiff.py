@@ -65,28 +65,39 @@ def get_data_from_file(path_to_file):
     return file_data
 
 
-def render_result(diff_obj, indent=''):
+def render_result(diff_obj, indent=' '):
     rendered_diff = ['{']
     for diff_key in sorted(diff_obj.keys()):
         for diff_obj_key, diff_obj_value in diff_obj[diff_key].items():
             if diff_key == NESTED:
-                rendered_diff.append('{}{}{}: {}'.format(
-                    indent, INDENT[diff_key], diff_obj_key, render_result(diff_obj_value, indent + ' ' * 2)))
+                rendered_diff.append(format_output(
+                    INDENT[diff_key], diff_obj_key, render_result(diff_obj_value, indent + ' ' * 2), indent))
             elif isinstance(diff_obj_value, dict):
-                rendered_diff.append('{}{}{}: {}'.format(
-                    indent, INDENT[diff_key], diff_obj_key, render_result({COMMON: diff_obj_value}, indent + ' ' * 2)))
+                rendered_diff.append(format_output(
+                    INDENT[diff_key], diff_obj_key, render_result({COMMON: diff_obj_value}, indent + ' ' * 2), indent))
             else:
                 if diff_key == COMMON:
-                    rendered_diff.append('{}{}{}: {}'.format(indent, INDENT[COMMON], diff_obj_key, diff_obj_value))
+                    rendered_diff.append(format_output(INDENT[COMMON], diff_obj_key, diff_obj_value, indent))
                 elif diff_key == CHANGED:
-                    rendered_diff.append('{}{}{}: {}'.format(indent, INDENT[REMOVED], diff_obj_key, diff_obj_value[1]))
-                    rendered_diff.append('{}{}{}: {}'.format(indent, INDENT[ADDED], diff_obj_key, diff_obj_value[0]))
+                    rendered_diff.append(format_output(INDENT[REMOVED], diff_obj_key, diff_obj_value[1], indent))
+                    rendered_diff.append(format_output(INDENT[ADDED], diff_obj_key, diff_obj_value[0], indent))
                 elif diff_key == ADDED:
-                    rendered_diff.append('{}{}{}: {}'.format(indent, INDENT[ADDED], diff_obj_key, diff_obj_value))
+                    rendered_diff.append(format_output(INDENT[ADDED], diff_obj_key, diff_obj_value, indent))
                 elif diff_key == REMOVED:
-                    rendered_diff.append('{}{}{}: {}'.format(indent, INDENT[REMOVED], diff_obj_key, diff_obj_value))
+                    rendered_diff.append(format_output(INDENT[REMOVED], diff_obj_key, diff_obj_value, indent))
     rendered_diff.append(indent + '}')
     return '\n'.join(rendered_diff)
+
+
+def format_output(action_format, key_to_render, value_to_render, indent):
+    if isinstance(value_to_render, dict):
+        rendered_dict = ['{']
+        for key, value in value_to_render.items():
+            rendered_dict.append('{}{}: {}'.format(indent * 4, key, value))
+        rendered_dict.append(indent * 2 + '}')
+        return '{}{}{}: {}'.format(indent, action_format, key_to_render, '\n'.join(rendered_dict))
+    else:
+        return '{}{}{}: {}'.format(indent, action_format, key_to_render, value_to_render)
 
 
 if __name__ == '__main__':
