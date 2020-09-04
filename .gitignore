@@ -8,3 +8,4 @@ dist/
 .pytest_cache
 .coverage
 coverage.xml
+gendiff/scripts/test_diff.py
