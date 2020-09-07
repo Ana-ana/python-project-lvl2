@@ -2,6 +2,7 @@ import argparse
 import json
 from os import path
 import yaml
+import pprint
 
 from collections import defaultdict
 
@@ -26,13 +27,17 @@ def main():
     file1 = get_data_from_file(args.first_file)
     file2 = get_data_from_file(args.second_file)
     difference = generate_diff(file1, file2)
-    print(''.join(render_diff(difference)))
+    if args.f == 'plain':
+        for item in render_plain(difference):
+            print('Property ' + item)
+    else:
+        print(''.join(render_diff(difference)))
 
 
 def initialize_parser():
     parser = argparse.ArgumentParser(description='Generate diff')
-    parser.add_argument('first_file')
-    parser.add_argument('second_file')
+    parser.add_argument('first_file', help='path to first file')
+    parser.add_argument('second_file', help='path to second file')
     parser.add_argument('--f', '--format',
                         metavar='FORMAT',
                         help='set format of output')
@@ -86,8 +91,31 @@ def render_diff(diff_obj, indent=' '):
                 elif diff_key == REMOVED:
                     rendered_diff.append(format_output(INDENT[REMOVED], diff_obj_key, diff_obj_value, indent))  # noqa: E501
     rendered_diff.append(indent + '}')
-    print(rendered_diff)
     return '\n'.join(rendered_diff)
+
+
+def render_plain(diff_obj):
+    rendered_str = []
+    for diff_key in sorted(diff_obj.keys()):
+        for k, v in diff_obj[diff_key].items():
+            if diff_key == NESTED:
+                for _ in render_plain(v):
+                    rendered_str.append('{}.{}'.format(k, _))
+            else:
+                if diff_key == ADDED:
+                    rendered_str.append('{} was added with value {}'.format(k, replace_dict(v)))
+                if diff_key == REMOVED:
+                    rendered_str.append('{} was removed'.format(k))
+                if diff_key == CHANGED:
+                    rendered_str.append('{} was updated from {} to {}.'.format(k, replace_dict(v[1]), replace_dict(v[0])))
+    return rendered_str
+
+def replace_dict(itm):
+    if isinstance(itm, dict):
+        itm = '[complex value]'
+    return itm
+
+
 
 
 def format_output(action_key, dic_key, dic_value, indent):
