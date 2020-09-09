@@ -1,8 +1,6 @@
 from gendiff.scripts.generate_difference import *
 
 
-
-
 def render_plain(diff_obj):
     rendered_str = []
     for diff_key in sorted(diff_obj.keys()):
@@ -17,10 +15,19 @@ def render_plain(diff_obj):
                     rendered_str.append('{} was removed'.format(k))
                 if diff_key == CHANGED:
                     rendered_str.append('{} was updated from {} to {}.'.format(k, replace_dict(v[1]), replace_dict(v[0])))
-    return rendered_str
+
+    return format_plain_text(rendered_str)
 
 
 def replace_dict(itm):
     if isinstance(itm, dict):
         itm = '[complex value]'
     return itm
+
+
+def format_plain_text(rendered_list):
+    output = []
+    for item in rendered_list:
+        output.append('Property ' + item)
+    return output
+

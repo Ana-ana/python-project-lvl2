@@ -13,8 +13,7 @@ def main():
     if args.f == 'json':
         print(''.join(render_json(difference)))
     if args.f == 'plain':
-        for item in render_plain(difference):
-            print('Property ' + item)
+        print('\n'.join(render_plain(difference)))
 
 
 if __name__ == '__main__':
